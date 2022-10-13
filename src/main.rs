@@ -2,6 +2,7 @@ use std::env;
 
 mod engine;
 mod utils;
+mod entities;
 
 fn main() {
     let file_name = match env::args().nth(1) {
