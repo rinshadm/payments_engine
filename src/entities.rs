@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct Transaction {
     #[serde(rename(deserialize = "type"))]
     pub operation: String,
