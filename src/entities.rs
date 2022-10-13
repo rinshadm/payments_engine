@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::utils::set_precision_to_four;
 
 #[derive(Deserialize)]
 pub struct Transaction {
@@ -19,10 +20,13 @@ pub struct Client {
     #[serde(rename = "client")]
     pub client_id: u16,
 
+    #[serde(serialize_with = "set_precision_to_four")]
     available: f32,
 
+    #[serde(serialize_with = "set_precision_to_four")]
     held: f32,
 
+    #[serde(serialize_with = "set_precision_to_four")]
     total: f32,
 
     locked: bool

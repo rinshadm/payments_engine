@@ -2,7 +2,7 @@ use std::io;
 use std::error::Error;
 use std::path::Path;
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 
 pub fn check_file_exists(file_name: &str) -> bool {
     match Path::new(file_name).try_exists() {
@@ -35,4 +35,12 @@ pub fn write_csv_stdout<T>(records: &Vec<T>) -> Result<(), Box<dyn Error>>
     }
 
     Ok(())
+}
+
+pub fn set_precision_to_four<S>(x: &f32, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    // Since x is already an f32, we are confident to parse and can unwrap
+    s.serialize_f32(format!("{:.4}", x).parse().unwrap())
 }
