@@ -10,7 +10,7 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
     
     validate_transactions(&transactions)?;
 
-    let deposits: HashMap<u32, &Transaction> = fetch_deposits(&transactions);
+    let deposits = fetch_deposits(&transactions);
     let mut disputed_transactions: HashSet<u32> = HashSet::new();
     
     let mut clients: HashMap<u16, Client> = HashMap::new();
