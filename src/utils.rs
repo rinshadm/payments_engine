@@ -40,11 +40,11 @@ where
     Ok(())
 }
 
-pub fn set_precision_to_four<S>(x: &f32, s: S) -> Result<S::Ok, S::Error>
+pub fn set_precision_to_four<S>(x: &f64, s: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
-    // Since x is already an f32,
+    // Since x is already an f64,
     // we are confident to parse and unwrap
     s.serialize_f32(format!("{:.4}", x).parse().unwrap())
 }

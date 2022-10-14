@@ -13,7 +13,7 @@ pub struct Transaction {
     pub tx_id: u32,
 
     #[serde(deserialize_with = "trim")]
-    pub amount: f32,
+    pub amount: f64,
 }
 
 #[derive(Serialize)]
@@ -22,13 +22,13 @@ pub struct Client {
     pub client_id: u16,
 
     #[serde(serialize_with = "set_precision_to_four")]
-    available: f32,
+    available: f64,
 
     #[serde(serialize_with = "set_precision_to_four")]
-    held: f32,
+    held: f64,
 
     #[serde(serialize_with = "set_precision_to_four")]
-    total: f32,
+    total: f64,
 
     locked: bool,
 }
@@ -37,14 +37,14 @@ impl Client {
     pub fn new(client_id: u16) -> Self {
         Client {
             client_id: client_id,
-            available: 0f32,
-            held: 0f32,
-            total: 0f32,
+            available: 0f64,
+            held: 0f64,
+            total: 0f64,
             locked: false,
         }
     }
 
-    pub fn credit(&mut self, amount: f32) -> bool {
+    pub fn credit(&mut self, amount: f64) -> bool {
         // If account is locked, don't proceed
         if self.locked {
             return false;
@@ -56,7 +56,7 @@ impl Client {
         true
     }
 
-    pub fn debit(&mut self, amount: f32) -> bool {
+    pub fn debit(&mut self, amount: f64) -> bool {
         if self.locked {
             return false;
         }
@@ -71,7 +71,7 @@ impl Client {
         false
     }
 
-    pub fn hold(&mut self, amount: f32) -> bool {
+    pub fn hold(&mut self, amount: f64) -> bool {
         if self.locked {
             return false;
         }
@@ -82,14 +82,14 @@ impl Client {
         true
     }
 
-    pub fn release_hold(&mut self, amount: f32) -> bool {
+    pub fn release_hold(&mut self, amount: f64) -> bool {
         self.held -= amount;
         self.available += amount;
 
         true
     }
 
-    pub fn charge_back(&mut self, amount: f32) -> bool {
+    pub fn charge_back(&mut self, amount: f64) -> bool {
         self.held -= amount;
         self.total -= amount;
         self.locked = true;
