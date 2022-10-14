@@ -54,8 +54,15 @@ where
     D: Deserializer<'de>,
     T: FromStr,
     <T as FromStr>::Err: Debug,
+    T: Default,
 {
-    let s: &str = Deserialize::deserialize(deserializer)?;
+    let mut s: &str = Deserialize::deserialize(deserializer)?;
+    s = s.trim();
+
+    if s.is_empty() {
+        return Ok(Default::default());
+    }
+
     let result = s.trim().parse::<T>().unwrap(); // If data format is wrong, panic.
 
     Ok(result)
