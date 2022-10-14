@@ -34,11 +34,10 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
                 // Check transaction exists
                 if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
                     // Check duplicate disputes.
-                    if !disputed_transactions.contains(&disputed_tx.tx_id) {
+                    if !disputed_transactions.contains(&disputed_tx.tx_id) &&
+                        client.hold(disputed_tx.amount) {
                         // If dispute is successful, mark transaction as disputed.
-                        if client.hold(disputed_tx.amount) {
-                            disputed_transactions.insert(disputed_tx.tx_id);
-                        }
+                        disputed_transactions.insert(disputed_tx.tx_id);
                     }
                 } 
             },
@@ -46,11 +45,10 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
                 // Check transaction exists
                 if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
                     // Check if transaction is disputed.
-                    if disputed_transactions.contains(&disputed_tx.tx_id) {
+                    if disputed_transactions.contains(&disputed_tx.tx_id) &&
+                        client.release_hold(disputed_tx.amount) {
                         // If successfully resolved, mark transaction as undisputed.
-                        if client.release_hold(disputed_tx.amount) {
-                            disputed_transactions.remove(&disputed_tx.tx_id);
-                        }
+                        disputed_transactions.remove(&disputed_tx.tx_id);
                     }
                 } 
             },
@@ -58,11 +56,10 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
                 // Check transaction exists
                 if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
                     // Check if transaction is disputed.
-                    if disputed_transactions.contains(&disputed_tx.tx_id) {
+                    if disputed_transactions.contains(&disputed_tx.tx_id) &&
+                        client.charge_back(disputed_tx.amount) {
                         // If successfully charged back, mark transaction as undisputed.
-                        if client.charge_back(disputed_tx.amount) {
-                            disputed_transactions.remove(&disputed_tx.tx_id);
-                        }
+                        disputed_transactions.remove(&disputed_tx.tx_id);
                     }
                 } 
             }
