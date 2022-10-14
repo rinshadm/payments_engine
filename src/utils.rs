@@ -56,7 +56,7 @@ pub fn trim<'de, 'a, D, T>(deserializer: D) -> Result<T, D::Error>
     let s: &str = Deserialize::deserialize(deserializer)?;
     let result = s.trim()
         .parse::<T>()
-        .unwrap();
+        .unwrap();  // If the input has wrong format, panic.
         
     Ok(result)
 }
