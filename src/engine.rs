@@ -1,69 +1,67 @@
-use std::io;
-use std::error::Error;
 use std::collections::{HashMap, HashSet};
+use std::error::Error;
+use std::io;
 
-use crate::utils;
 use crate::entities::{Client, Transaction};
+use crate::utils;
 
 pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
     let transactions: Vec<Transaction> = utils::read_csv(file_name)?;
-    
+
     validate_transactions(&transactions)?;
 
     let deposits = fetch_deposits(&transactions);
     let mut disputed_transactions: HashSet<u32> = HashSet::new();
-    
+
     let mut clients: HashMap<u16, Client> = HashMap::new();
 
     for tx in &transactions {
-        let client = clients.entry(tx.client_id)
-                                         .or_insert(Client::new(tx.client_id));
+        let client = clients
+            .entry(tx.client_id)
+            .or_insert(Client::new(tx.client_id));
 
         match tx.operation.as_str() {
             "deposit" => {
                 if tx.amount > 0.0 {
                     client.credit(tx.amount);
                 }
-            },
+            }
             "withdrawal" => {
                 if tx.amount > 0.0 {
                     client.debit(tx.amount);
                 }
-            },
-            "dispute" => {
-                // Check transaction exists
-                if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
-                    // Check duplicate disputes.
-                    if !disputed_transactions.contains(&disputed_tx.tx_id) &&
-                        client.hold(disputed_tx.amount) {
-                        // If dispute is successful, mark transaction as disputed.
-                        disputed_transactions.insert(disputed_tx.tx_id);
-                    }
-                } 
-            },
-            "resolve" => {
-                // Check transaction exists
-                if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
-                    // Check if transaction is disputed.
-                    if disputed_transactions.contains(&disputed_tx.tx_id) &&
-                        client.release_hold(disputed_tx.amount) {
-                        // If successfully resolved, mark transaction as undisputed.
-                        disputed_transactions.remove(&disputed_tx.tx_id);
-                    }
-                } 
-            },
-            "chargeback" => {
-                // Check transaction exists
-                if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
-                    // Check if transaction is disputed.
-                    if disputed_transactions.contains(&disputed_tx.tx_id) &&
-                        client.charge_back(disputed_tx.amount) {
-                        // If successfully charged back, mark transaction as undisputed.
-                        disputed_transactions.remove(&disputed_tx.tx_id);
-                    }
-                } 
             }
-            _ => continue
+            "dispute" => {
+                if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
+                    // Check transaction exists
+                    if !disputed_transactions.contains(&disputed_tx.tx_id)  // duplicate check
+                        && client.hold(disputed_tx.amount)
+                    // dispute the amount
+                    {
+                        disputed_transactions.insert(disputed_tx.tx_id); // mark transaction as disputed.
+                    }
+                }
+            }
+            "resolve" => {
+                if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
+                    if disputed_transactions.contains(&disputed_tx.tx_id)   // Check transaction is disputed.
+                        && client.release_hold(disputed_tx.amount)
+                    // resolve dispute
+                    {
+                        disputed_transactions.remove(&disputed_tx.tx_id); // remove dispute.
+                    }
+                }
+            }
+            "chargeback" => {
+                if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
+                    if disputed_transactions.contains(&disputed_tx.tx_id)
+                        && client.charge_back(disputed_tx.amount)
+                    {
+                        disputed_transactions.remove(&disputed_tx.tx_id);
+                    }
+                }
+            }
+            _ => continue,
         }
     }
 
@@ -74,12 +72,9 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
 
 fn validate_transactions(transactions: &Vec<Transaction>) -> Result<(), Box<dyn Error>> {
     /* If there is no data, it could be due to format issues.
-       Consider format issues and absent data as invalid data. */
+    Consider format issues and absent data as invalid data. */
     if transactions.len() == 0 {
-        return Err(
-            Box::from(
-                io::Error::from(
-                    io::ErrorKind::InvalidData)));
+        return Err(Box::from(io::Error::from(io::ErrorKind::InvalidData)));
     }
 
     Ok(())
@@ -91,7 +86,7 @@ fn fetch_deposits(transactions: &Vec<Transaction>) -> HashMap<u32, &Transaction>
     for tx in transactions {
         match tx.operation.as_str() {
             "deposit" => transactions_hash.insert(tx.tx_id, tx),
-            _ => continue
+            _ => continue,
         };
     }
 

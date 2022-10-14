@@ -1,8 +1,8 @@
 use std::env;
 
 mod engine;
-mod utils;
 mod entities;
+mod utils;
 
 fn main() {
     let file_name = match env::args().nth(1) {
@@ -14,12 +14,15 @@ fn main() {
     };
 
     if !utils::check_file_exists(&file_name) {
-        eprintln!("File {} does not exist. Please check the path is correct. Exiting!", file_name);
+        eprintln!(
+            "File {} does not exist. Please check the path is correct. Exiting!",
+            file_name
+        );
         return;
     }
 
     if let Err(error) = engine::run(&file_name) {
         eprintln!("Engine failed to run with error: {}", error);
         return;
-    } 
+    }
 }
