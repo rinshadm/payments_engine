@@ -12,7 +12,6 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
 
     let deposits = fetch_deposits(&transactions);
     let mut disputed_transactions: HashSet<u32> = HashSet::new();
-
     let mut clients: HashMap<u16, Client> = HashMap::new();
 
     for tx in &transactions {

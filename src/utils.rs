@@ -63,7 +63,7 @@ where
         return Ok(Default::default());
     }
 
-    let result = s.trim().parse::<T>().unwrap(); // If data format is wrong, panic.
+    let result = s.parse::<T>().unwrap(); // If data format is wrong, panic.
 
     Ok(result)
 }
