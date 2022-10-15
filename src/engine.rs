@@ -32,11 +32,11 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
                 }
             }
             "dispute" => {
+                // Check deposit exists
                 if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
-                    // Check transaction exists
                     if !disputed_transactions.contains(&disputed_tx.tx_id)  // duplicate check
+                        // dispute amount
                         && client.hold(disputed_tx.amount)
-                    // dispute the amount
                     {
                         disputed_transactions.insert(disputed_tx.tx_id); // mark transaction as disputed.
                     }
@@ -44,9 +44,10 @@ pub fn run(file_name: &str) -> Result<(), Box<dyn Error>> {
             }
             "resolve" => {
                 if let Some(&disputed_tx) = deposits.get(&tx.tx_id) {
-                    if disputed_transactions.contains(&disputed_tx.tx_id)   // Check transaction is disputed.
+                    // Check transaction is disputed.
+                    if disputed_transactions.contains(&disputed_tx.tx_id)
+                        // resolve dispute
                         && client.release_hold(disputed_tx.amount)
-                    // resolve dispute
                     {
                         disputed_transactions.remove(&disputed_tx.tx_id); // remove dispute.
                     }
