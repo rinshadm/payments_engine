@@ -46,7 +46,7 @@ where
 {
     // Since x is already an f64,
     // we are confident to parse and unwrap
-    s.serialize_f32(format!("{:.4}", x).parse().unwrap())
+    s.serialize_f64(format!("{:.4}", x).parse().unwrap())
 }
 
 pub fn trim<'de, 'a, D, T>(deserializer: D) -> Result<T, D::Error>
