@@ -1,9 +1,10 @@
+use csv::DeserializeRecordsIntoIter;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::error::Error;
 use std::fmt::Debug;
+use std::fs::File;
 use std::path::Path;
 use std::{io, str::FromStr};
-
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 pub fn check_file_exists(file_name: &str) -> bool {
     match Path::new(file_name).try_exists() {
@@ -12,19 +13,13 @@ pub fn check_file_exists(file_name: &str) -> bool {
     }
 }
 
-pub fn read_csv<T>(file_name: &str) -> Result<Vec<T>, Box<dyn Error>>
+pub fn read_csv<T>(file_name: &str) -> Result<DeserializeRecordsIntoIter<File, T>, Box<dyn Error>>
 where
     for<'a> T: Deserialize<'a>,
 {
-    let mut rdr = csv::Reader::from_path(file_name)?;
-    let mut records: Vec<T> = Vec::new();
+    let rdr = csv::Reader::from_path(file_name)?;
 
-    for result in rdr.deserialize() {
-        let record: T = result?;
-        records.push(record);
-    }
-
-    Ok(records)
+    Ok(rdr.into_deserialize::<T>())
 }
 
 pub fn write_csv_stdout<T>(records: &Vec<T>) -> Result<(), Box<dyn Error>>
