@@ -1,18 +1,18 @@
-use crate::utils::{set_precision_to_four, trim};
+use crate::utils::{set_precision_to_four, trim_lowercase};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct Transaction {
-    #[serde(rename(deserialize = "type"), deserialize_with = "trim")]
+    #[serde(rename(deserialize = "type"), deserialize_with = "trim_lowercase")]
     pub operation: String,
 
-    #[serde(rename(deserialize = "client"), deserialize_with = "trim")]
+    #[serde(rename(deserialize = "client"), deserialize_with = "trim_lowercase")]
     pub client_id: u16,
 
-    #[serde(rename(deserialize = "tx"), deserialize_with = "trim")]
+    #[serde(rename(deserialize = "tx"), deserialize_with = "trim_lowercase")]
     pub tx_id: u32,
 
-    #[serde(deserialize_with = "trim")]
+    #[serde(deserialize_with = "trim_lowercase")]
     pub amount: f64,
 }
 

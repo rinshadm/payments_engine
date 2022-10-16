@@ -44,15 +44,15 @@ where
     s.serialize_f64(format!("{:.4}", x).parse().unwrap())
 }
 
-pub fn trim<'de, 'a, D, T>(deserializer: D) -> Result<T, D::Error>
+pub fn trim_lowercase<'de, 'a, D, T>(deserializer: D) -> Result<T, D::Error>
 where
     D: Deserializer<'de>,
     T: FromStr,
     <T as FromStr>::Err: Debug,
     T: Default,
 {
-    let mut s: &str = Deserialize::deserialize(deserializer)?;
-    s = s.trim();
+    let mut s: String = Deserialize::deserialize(deserializer)?;
+    s = s.trim().to_ascii_lowercase();
 
     if s.is_empty() {
         return Ok(Default::default());
