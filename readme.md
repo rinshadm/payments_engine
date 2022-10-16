@@ -30,6 +30,7 @@ Below assumtions have been made:
 - Whitespaces are possible in each cell of the CSV.
 - Input file will be in valid CSV format. Otherwise, engine will panic.
 - Data type in each cell of CSV will be valid. Otherwise, engine will panic.
+- Transaction type can be case-insensitive. They will be converted to lowercase upon deserialization.
 - Only deposits can be disputed.
 - No further transaction will be possible on locked accounts.
 - It is possible that an account can end up with negative available/total amount.
